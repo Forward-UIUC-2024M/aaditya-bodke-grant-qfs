@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center mb-4">
+    <div class="col-md-8">
+        <form method="POST" action="{{ url_for('main.handle_search') }}" id="search-form">
+            <div class="input-group">
+                <input type="text" class="form-control form-control-lg" name="query" id="query" placeholder="Search for funding opportunities..." value="{{ query }}" autofocus required>
+                <button class="btn btn-primary btn-lg" type="submit">SEARCH</button>
+            </div>
+        </form>
+        <div id="error-message" class="text-danger mt-2" style="display: none;">
+            Please enter a search query.
+        </div>
+    </div>
+</div>
+
+<!-- Description section -->
+<div id="description-section" class="row justify-content-center mb-4">
+    <div class="col-md-8">
+        <p class="text-muted text-center">
+            Welcome to our Funding Opportunities Search Engine.<br>Developed at Forward Data Lab, this tool helps researchers, 
+            entrepreneurs, and organizations discover relevant funding sources quickly and 
+            efficiently. Simply enter your query above to explore a wide range of grants, scholarships, and financial support options 
+            tailored to your needs.<br>
+            <b>Hint : More descriptive queries get better results</b>
+
+        </p>
+    </div>
+</div>
+
+<div id="loading" class="text-center" style="display: none;">
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-2">Searching for results...</p>
+</div>
+
+<div id="results-container">
+    {% include 'results.html' %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('search-form');
+    const loading = document.getElementById('loading');
+    const resultsContainer = document.getElementById('results-container');
+    const errorMessage = document.getElementById('error-message');
+    const queryInput = document.getElementById('query');
+    const descriptionSection = document.getElementById('description-section');
+
+    function showLoading() {
+        loading.style.display = 'block';
+        resultsContainer.style.display = 'none';
+        descriptionSection.style.display = 'none';
+    }
+
+    function hideLoading() {
+        loading.style.display = 'none';
+        resultsContainer.style.display = 'block';
+    }
+
+    function showError() {
+        errorMessage.style.display = 'block';
+    }
+
+    function hideError() {
+        errorMessage.style.display = 'none';
+    }
+
+    function showDescription() {
+        descriptionSection.style.display = 'flex';
+    }
+
+    function performSearch(url, formData) {
+        showLoading();
+        hideError();
+
+        fetch(url, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.text())
+        .then(html => {
+            resultsContainer.innerHTML = html;
+            hideLoading();
+            attachPaginationListeners();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            hideLoading();
+            showDescription();
+            resultsContainer.innerHTML = '<div class="alert alert-danger" role="alert">An error occurred while searching. Please try again.</div>';
+        });
+    }
+
+    function attachPaginationListeners() {
+        const paginationForms = document.querySelectorAll('#results-container form');
+        paginationForms.forEach(paginationForm => {
+            paginationForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                performSearch(form.action, new FormData(this));
+            });
+        });
+    }
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (queryInput.value.trim() === '') {
+            showError();
+            return;
+        }
+        performSearch(this.action, new FormData(this));
+    });
+
+    queryInput.addEventListener('input', function() {
+        if (this.value.trim() !== '') {
+            hideError();
+        }
+    });
+
+    // Initial attachment of pagination listeners
+    attachPaginationListeners();
+});
+</script>
+{% endblock %}

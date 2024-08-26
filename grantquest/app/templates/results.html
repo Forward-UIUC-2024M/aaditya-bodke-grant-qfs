@@ -1,0 +1,62 @@
+{% if results %}
+    <div class="row">
+        <div class="col-md-12">
+            <p class="text-muted mb-4">Showing results {{ from_ + 1 }}-{{ from_ + results|length }} out of {{ total }}.</p>
+            {% for result in results %}
+                <div class="card mb-4 result-card">
+                    <div class="card-body">
+                        <h3 class="card-title mb-3">
+                            <a href="{{ url_for('main.get_document', id=result.id) }}" class="text-decoration-none">{{ result.content.title }}</a>
+                        </h3>
+                        <p class="card-text mb-3">{{ result.snippet|replace('\n', '<br>')|safe }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="result-meta">
+                                <!-- <span class="text-muted me-3">
+                                    <i class="bi bi-calendar"></i> 
+                                    {% if result.content.date %}
+                                        {{ result.content.date }}
+                                    {% else %}
+                                        Date not available
+                                    {% endif %}
+                                </span> -->
+                                {% if result.es_score %}
+                                    <span class="text-muted">
+                                        <i class="bi bi-star"></i> Score: {{ "%.4f"|format(result.es_score) }}
+                                    </span>
+                                {% endif %}
+                            </div>
+                            <a href="{{ url_for('main.get_document', id=result.id) }}" class="btn btn-primary">VIEW DETAILS</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            
+            <nav aria-label="Search results pages" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if from_ > 0 %}
+                        <li class="page-item">
+                            <form method="POST">
+                                <input type="hidden" name="query" value="{{ query }}">
+                                <input type="hidden" name="from_" value="{{ from_ - results|length }}">
+                                <button type="submit" class="page-link">&laquo; Previous</button>
+                            </form>
+                        </li>
+                    {% endif %}
+                    {% if from_ + results|length < total %}
+                        <li class="page-item">
+                            <form method="POST">
+                                <input type="hidden" name="query" value="{{ query }}">
+                                <input type="hidden" name="from_" value="{{ from_ + results|length }}">
+                                <button type="submit" class="page-link">Next &raquo;</button>
+                            </form>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+{% elif request.method == 'POST' %}
+    <div class="alert alert-warning" role="alert">
+        No results found. Please try a different search term.
+    </div>
+{% endif %}

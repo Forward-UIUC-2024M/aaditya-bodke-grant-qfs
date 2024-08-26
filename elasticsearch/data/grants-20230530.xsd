@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="grants_data">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="grant"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="grant">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="url"/>
+        <xs:element ref="amount_info"/>
+        <xs:element ref="site_grant_type"/>
+        <xs:element ref="modified_date"/>
+        <xs:element ref="application_url"/>
+        <xs:element ref="title"/>
+        <xs:element minOccurs="0" ref="ext_grant_id"/>
+        <xs:element ref="all_titles"/>
+        <xs:element ref="submission_info"/>
+        <xs:element ref="all_grant_source_urls"/>
+        <xs:element ref="status"/>
+        <xs:element ref="description"/>
+        <xs:element ref="eligibility"/>
+        <xs:element ref="categories_display"/>
+        <xs:element ref="limited_grant_info"/>
+        <xs:element minOccurs="0" ref="replaces"/>
+        <xs:element ref="user_categories"/>
+        <xs:element ref="submit_date"/>
+        <xs:element ref="is_limited"/>
+        <xs:element ref="site_categories"/>
+        <xs:element ref="cost_sharing"/>
+        <xs:element ref="grant_source_url"/>
+        <xs:element ref="deadlines"/>
+        <xs:element minOccurs="0" ref="amounts"/>
+        <xs:element ref="all_types"/>
+        <xs:element ref="all_applicant_types"/>
+        <xs:element ref="locations"/>
+        <xs:element ref="sponsors"/>
+      </xs:sequence>
+      <xs:attribute name="id" use="required" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="url" type="xs:string"/>
+  <xs:element name="amount_info" type="xs:string"/>
+  <xs:element name="site_grant_type" type="xs:string"/>
+  <xs:element name="modified_date" type="xs:string"/>
+  <xs:element name="application_url" type="xs:string"/>
+  <xs:element name="title" type="xs:string"/>
+  <xs:element name="ext_grant_id" type="xs:string"/>
+  <xs:element name="all_titles" type="xs:string"/>
+  <xs:element name="submission_info" type="xs:string"/>
+  <xs:element name="all_grant_source_urls" type="xs:string"/>
+  <xs:element name="status" type="xs:NCName"/>
+  <xs:element name="description" type="xs:string"/>
+  <xs:element name="eligibility" type="xs:string"/>
+  <xs:element name="categories_display" type="xs:string"/>
+  <xs:element name="limited_grant_info" type="xs:string"/>
+  <xs:element name="replaces" type="xs:string"/>
+  <xs:element name="user_categories" type="xs:string"/>
+  <xs:element name="submit_date" type="xs:string"/>
+  <xs:element name="is_limited" type="xs:integer"/>
+  <xs:element name="site_categories" type="xs:string"/>
+  <xs:element name="cost_sharing" type="xs:string"/>
+  <xs:element name="grant_source_url" type="xs:anyURI"/>
+  <xs:element name="deadlines">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="deadline"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="deadline">
+    <xs:complexType mixed="true">
+      <xs:attribute name="type" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="amounts">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="amount"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="amount">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="xs:decimal">
+          <xs:attribute name="confirmed" use="required" type="xs:integer"/>
+          <xs:attribute name="currency" use="required" type="xs:NCName"/>
+          <xs:attribute name="type" use="required" type="xs:NCName"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="all_types" type="xs:string"/>
+  <xs:element name="all_applicant_types" type="xs:string"/>
+  <xs:element name="locations">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="location"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="location">
+    <xs:complexType mixed="true">
+      <xs:attribute name="is_exclude" use="required" type="xs:integer"/>
+      <xs:attribute name="is_primary" use="required" type="xs:integer"/>
+      <xs:attribute name="type" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="sponsors">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="sponsor"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="sponsor">
+    <xs:complexType mixed="true">
+      <xs:attribute name="id" use="required" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

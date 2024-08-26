@@ -1,0 +1,310 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .more-content { display: none; }
+    .read-more-btn { 
+        background: none;
+        border: none;
+        padding: 0;
+        font: inherit;
+        cursor: pointer;
+        outline: inherit;
+    }
+    .arrow-down {
+        display: inline-block;
+        width: 0;
+        height: 0;
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-top: 5px solid #007bff;
+        transition: transform 0.3s ease;
+    }
+    .arrow-down.up {
+        transform: rotate(180deg);
+    }
+    .preserve-newlines {
+        white-space: pre-line;
+        word-wrap: break-word;
+        word-break: keep-all;
+        overflow-wrap: break-word;
+    }
+    .card-body {
+        min-width: 300px;
+    }
+    .card-text {
+        max-height: 200px;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+    }
+    .card-text.expanded {
+        max-height: none;
+        overflow: visible;
+    }
+    .no-max-height {
+        max-height: none !important;
+        overflow: visible !important;
+    }
+</style>
+
+<div class="container mt-4">
+    <!-- <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Grant Details</li>
+        </ol>
+    </nav> -->
+
+    <h1 class="mb-4">{{ grant.title|default('Grant Details') }}</h1>
+
+    <div class="row">
+        <div class="col-md-8">
+            {% if grant.description %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Description</h5>
+                    <p id="description" class="card-text preserve-newlines">
+                        {{ grant.description|replace('\n', '<br>')|safe }}
+                    </p>
+                    {% if grant.description|length > 500 %}
+                        <button onclick="toggleReadMore('description')" id="btn-description" class="read-more-btn">
+                            <span class="arrow-down"></span>
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if grant.eligibility %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Eligibility</h5>
+                    <p id="eligibility" class="card-text preserve-newlines">
+                        {{ grant.eligibility|replace('\n', '<br>')|safe }}
+                    </p>
+                    {% if grant.eligibility|length > 500 %}
+                        <button onclick="toggleReadMore('eligibility')" id="btn-eligibility" class="read-more-btn">
+                            <span class="arrow-down"></span>
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if grant.submission_info %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Submission Information</h5>
+                    <p id="submission" class="card-text preserve-newlines">
+                        {{ grant.submission_info|replace('\n', '<br>')|safe }}
+                    </p>
+                    {% if grant.submission_info|length > 500 %}
+                        <button onclick="toggleReadMore('submission')" id="btn-submission" class="read-more-btn">
+                            <span class="arrow-down"></span>
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+
+        <div class="col-md-4">
+
+            {% if grant.url or grant.application_url or grant.grant_source_url %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Links</h5>
+                    <ul class="list-unstyled">
+                        {% if grant.url %}<li><a href="{{ grant.url }}" target="_blank">Grant Details</a></li>{% endif %}
+                        {% if grant.application_url %}<li><a href="{{ grant.application_url }}" target="_blank">Application</a></li>{% endif %}
+                        {% if grant.grant_source_url %}<li><a href="{{ grant.grant_source_url }}" target="_blank">Source</a></li>{% endif %}
+                    </ul>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Quick Info</h5>
+                    <ul class="list-unstyled">
+                        {% if grant.status %}<li><strong>Status:</strong> {{ grant.status }}</li>{% endif %}
+                        {% if grant.site_grant_type and 'None' not in grant.site_grant_type %}<li><strong>Grant Type:</strong> {{ grant.site_grant_type }}</li>{% endif %}
+                        {% if grant.submit_date %}<li><strong>Submit Date:</strong> {{ grant.submit_date }}</li>{% endif %}
+                        {% if grant.modified_date %}<li><strong>Modified Date:</strong> {{ grant.modified_date }}</li>{% endif %}
+                    </ul>
+                </div>
+            </div>
+
+            {% if (grant.amount_info and 'None' not in grant.amount_info) or grant.amounts %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Funding Information</h5>
+                    {% if grant.amount_info and 'None' not in grant.amount_info %}
+                        <p class="preserve-newlines no-max-height">{{ grant.amount_info|replace('\n', '<br>')|safe }}</p>
+                    {% elif grant.amounts %}
+                        <ul class="list-unstyled">
+                        {% if grant.amounts is string %}
+                            <li>{{ grant.amounts }}</li>
+                        {% elif grant.amounts is mapping %}
+                            {% for key, value in grant.amounts.items() %}
+                                <li><strong>{{ key|replace('_', ' ')|title }}:</strong> {{ value }}</li>
+                            {% endfor %}
+                        {% elif grant.amounts is iterable %}
+                            {% for amount in grant.amounts %}
+                                <li>
+                                    {% if amount is mapping %}
+                                        {% for key, value in amount.items() %}
+                                            <strong>{{ key|replace('_', ' ')|title }}:</strong> {{ value }}
+                                            {% if not loop.last %}, {% endif %}
+                                        {% endfor %}
+                                    {% else %}
+                                        {{ amount }}
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        {% endif %}
+                        </ul>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if grant.user_categories or grant.site_categories %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Categories</h5>
+                    {% if grant.user_categories %}
+                        <p class="preserve-newlines no-max-height">{{ grant.user_categories|replace(';', ',')|safe }}</p>
+                    {% elif grant.site_categories %}
+                        <p class="preserve-newlines no-max-height">{{ grant.site_categories|replace(';', ',')|safe }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if grant.deadlines %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Deadlines</h5>
+                    <ul class="list-unstyled">
+                    {% if grant.deadlines is mapping %}
+                        {% for deadline_type, deadline_info in grant.deadlines.items() %}
+                            <li><strong>{{ deadline_type|title }}:</strong> 
+                                {% if deadline_info is mapping %}
+                                    {{ deadline_info.date }}
+                                {% else %}
+                                    {{ deadline_info }}
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    {% elif grant.deadlines is iterable %}
+                        {% for deadline in grant.deadlines %}
+                            <li>
+                                {% if deadline is mapping %}
+                                    <strong>{{ deadline.type|default('Deadline')|title }}:</strong> {{ deadline.date|default(deadline.value) }}
+                                {% else %}
+                                    {{ deadline }}
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    {% else %}
+                        <li>{{ grant.deadlines }}</li>
+                    {% endif %}
+                    </ul>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if grant.cost_sharing and 'None' not in grant.cost_sharing%}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Cost Sharing</h5>
+                    <p class="card-text preserve-newlines no-max-height">{{ grant.cost_sharing|replace('\n', '<br>')|safe }}</p>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if grant.sponsors %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Sponsors</h5>
+                    <ul class="list-unstyled">
+                    {% if grant.sponsors is mapping %}
+                        {% for sponsor in grant.sponsors.values() %}
+                            <li>{{ sponsor.name }}{% if sponsor.id %} (ID: {{ sponsor.id }}){% endif %}</li>
+                        {% endfor %}
+                    {% elif grant.sponsors is iterable %}
+                        {% for sponsor in grant.sponsors %}
+                            <li>
+                                {% if sponsor is mapping %}
+                                    {{ sponsor.name }}{% if sponsor.id %} (ID: {{ sponsor.id }}){% endif %}
+                                {% else %}
+                                    {{ sponsor }}
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    {% else %}
+                        <li>{{ grant.sponsors }}</li>
+                    {% endif %}
+                    </ul>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if grant.locations %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Locations</h5>
+                    <ul class="list-unstyled">
+                    {% if grant.locations is mapping %}
+                        {% for location in grant.locations.values() %}
+                            <li>
+                                <strong>{{ location.type|default('Location')|title }}:</strong> 
+                                {{ location.text|default(location) }}
+                                {% if location.is_primary == '1' %} (Primary){% endif %}
+                                {% if location.is_exclude == '1' %} (Excluded){% endif %}
+                            </li>
+                        {% endfor %}
+                    {% elif grant.locations is iterable %}
+                        {% for location in grant.locations %}
+                            <li>
+                                {% if location is mapping %}
+                                    <strong>{{ location.type|default('Location')|title }}:</strong> 
+                                    {{ location.text|default(location) }}
+                                    {% if location.is_primary == '1' %} (Primary){% endif %}
+                                    {% if location.is_exclude == '1' %} (Excluded){% endif %}
+                                {% else %}
+                                    {{ location }}
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    {% else %}
+                        <li>{{ grant.locations }}</li>
+                    {% endif %}
+                    </ul>
+                </div>
+            </div>
+            {% endif %}
+
+            
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleReadMore(id) {
+    var content = document.getElementById(id);
+    var btnText = document.getElementById(`btn-${id}`);
+
+    if (content.classList.contains('expanded')) {
+        content.classList.remove('expanded');
+        btnText.querySelector('.arrow-down').classList.remove('up');
+    } else {
+        content.classList.add('expanded');
+        btnText.querySelector('.arrow-down').classList.add('up');
+    }
+}
+</script>
+
+{% endblock %}
