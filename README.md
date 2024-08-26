@@ -47,19 +47,12 @@ For detailed instructions on building the search index, refer to [elasticsearch/
 ### Run Flask application
 To set up and run the Flask application, see [grantquest/README.md](grantquest/README.md)
 
-## Project Structure
-```
-aaditya-bodke-grant-qfs/
-├── elasticsearch/
-│   └── README.md
-├── grantquest/
-│   ├── app/
-│   ├── config.py
-│   ├── run.py
-│   └── README.md
-├── requirements.txt
-└── README.md (this file)
-```
+## Report
+See [report.pdf](./report.pdf)
+
+## Demo video
+
+The demo video can be found [here](https://drive.google.com/drive/folders/1pReQ1U_xJsdKp3ptLCzuc2GdU643Tf40?usp=sharing).
 
 
 ## Future Work
