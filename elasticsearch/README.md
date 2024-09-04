@@ -11,6 +11,10 @@ The data used was scraped from the Internet and included grants till the end of 
 
 The data is available [here](https://drive.google.com/drive/folders/1pReQ1U_xJsdKp3ptLCzuc2GdU643Tf40?usp=sharing).
 
+[This repository](https://github.com/ericmuckley/foa-finder) contains an automated web scraper for finding funding opportunity announcements from grants.gov. 
+
+Every day, the [grants.gov](grants.gov) database is updated and exported to a zipped XML file which is available for download [here](https://www.grants.gov/xml-extract). 
+
 ### Indexing options
 
 #### Full-text
